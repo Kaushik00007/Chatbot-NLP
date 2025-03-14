@@ -1,7 +1,8 @@
 streamlit
 scikit-learn
-numpy
-pandas
-nltk
 joblib
 speechrecognition
+nltk
+pyaudio
+numpy
+pandas
