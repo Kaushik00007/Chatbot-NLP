@@ -60,18 +60,22 @@ def chatbot(input_text, topic):
     return "Sorry, I don't understand that."
 
 def recognize_speech():
-    try:
-        if "browser" in st.runtime.scriptrunner.get_script_run_ctx().session_id:
-            st.warning("⚠️ Voice input is not supported on mobile or Streamlit Cloud. Please use text input instead.")
-            return "Voice input not supported."
+    if sr is None:
+        st.warning("⚠️ Voice input is not available because SpeechRecognition is missing.")
+        return "Voice input not available."
 
-        recognizer = sr.Recognizer()
+    recognizer = sr.Recognizer()
+
+    if "browser" in st.runtime.scriptrunner.get_script_run_ctx().session_id:
+        st.warning("⚠️ Voice input is not supported on Streamlit Cloud. Please use text input instead.")
+        return "Voice input not supported."
+
+    try:
         with sr.Microphone() as source:
             st.write("🎤 Listening... Speak now!")
             recognizer.adjust_for_ambient_noise(source, duration=1)
             audio = recognizer.listen(source, timeout=10, phrase_time_limit=5)
-            text = recognizer.recognize_google(audio)
-            return text
+            return recognizer.recognize_google(audio)
     except sr.RequestError:
         return "Speech service is unavailable."
     except sr.UnknownValueError:
