@@ -41,11 +41,11 @@ A **Machine Learning-powered chatbot** that understands **text & voice inputs**,
 ### 📂 Project Structure
 
 ## 📁 Chatbot-NLP/
-**│-- chatbot.py                # Main chatbot application**
-**│-- train_model.py            # ML Model training script**
-**│-- intents.json              # Dataset for chatbot responses**
-**│-- requirements.txt          # Dependencies**
-**│-- chat_log.csv              # Chat history storage**
+**│-- chatbot.py**                # Main chatbot application
+**│-- train_model.py**            # ML Model training script
+**│-- intents.json**              # Dataset for chatbot responses
+**│-- requirements.txt**          # Dependencies
+**│-- chat_log.csv**              # Chat history storage
 
 ## 📖 Learning Outcomes
  **NLP & Machine Learning** – Implemented TF-IDF vectorization and Logistic Regression.
