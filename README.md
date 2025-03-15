@@ -22,15 +22,12 @@ A **Machine Learning-powered chatbot** that understands **text & voice inputs**,
 
 ## 🚀 Installation & Setup
 ### 1️⃣ Clone the Repository
-```bash
 git clone https://github.com/Kaushik00007/Chatbot-NLP
 cd Chatbot-NLP
 
-```bash
 ### 2️⃣ Install Dependencies
 pip install -r requirements.txt
 
-```bash
 ## 3️⃣ Run the Chatbot
 streamlit run chatbot.py
 
@@ -41,7 +38,8 @@ streamlit run chatbot.py
 4️⃣ User can select topics to filter responses for better conversation flow
 5️⃣ Conversation is logged and stored in chat_log.csv
 
-## 📂 Project Structure
+📂 Project Structure
+
 📁 Chatbot-NLP/
 │-- chatbot.py                # Main chatbot application
 │-- train_model.py            # ML Model training script
