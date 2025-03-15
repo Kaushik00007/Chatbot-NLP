@@ -49,7 +49,7 @@
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/YOUR-USERNAME/Chatbot-NLP.git
+git clone https://github.com/Kaushik00007
 cd Chatbot-NLP
 ```
 
@@ -74,14 +74,15 @@ Chat history is stored in chat_log.csv.
 ```
 Frontend:
 Hosted on Streamlit Cloud – Visit Live App
+
 Steps to Deploy
 Push your project to GitHub
 Go to Streamlit Cloud → Click "New App"
 Select GitHub repo & enter chatbot.py as Main File Path
 Click "Deploy"
 ```
-### 📂 Project Structure
-## 📁 Chatbot-NLP/
+## 📂 Project Structure
+### 📁 Chatbot-NLP/
 │-- **chatbot.py**                # Main chatbot application
 │-- **train_model.py**            # ML Model training script
 │-- **intents.json**              # Dataset for chatbot responses
@@ -99,10 +100,10 @@ Voice Recognition: Integrated Google Speech-to-Text API for voice input.
 Deployment: Hosted the chatbot on Streamlit Cloud for easy access.
 
 ## Learning Outcomes
- NLP & Machine Learning – Implemented TF-IDF vectorization and Logistic Regression.
- Speech Recognition – Integrated Google Speech-to-Text API.
- Web Development – Built an interactive chatbot UI using Streamlit.
- Deployment – Successfully deployed the chatbot on Streamlit Cloud.
+ - NLP & Machine Learning – Implemented TF-IDF vectorization and Logistic Regression.
+ - Speech Recognition – Integrated Google Speech-to-Text API.
+ - Web Development – Built an interactive chatbot UI using Streamlit.
+ - Deployment – Successfully deployed the chatbot on Streamlit Cloud.
 
 ## 🙌 Contributions
 Contributions are welcome! Follow these steps:
