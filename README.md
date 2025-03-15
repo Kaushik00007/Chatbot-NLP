@@ -21,7 +21,7 @@
 | Component       | Technology Used  |
 |----------------|-----------------|
 | **Frontend**   | Streamlit       |
-| **Backend**    | Python, Flask   |
+| **Backend**    | Python   |
 | **Machine Learning** | Scikit-learn, Logistic Regression, TF-IDF Vectorizer |
 | **NLP**        | NLTK, SpeechRecognition |
 | **Data Storage** | JSON (intents), CSV (chat logs) |
