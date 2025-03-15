@@ -49,7 +49,7 @@
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/Kaushik00007
+git clone https://github.com/Kaushik00007/Chatbot-NLP
 cd Chatbot-NLP
 ```
 
