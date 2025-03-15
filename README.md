@@ -92,12 +92,12 @@ Click "Deploy"
 
 ## 🛠️ Methodology
 
-Data Collection: We structured chatbot responses using an intents.json file, grouping user queries by category (intent).
-Text Preprocessing: Applied tokenization, stemming, and TF-IDF vectorization to transform text into machine-readable form.
-Model Training: Used Logistic Regression to classify user inputs into predefined intents.
-User Interaction: Implemented Streamlit UI for a simple and engaging chat experience.
-Voice Recognition: Integrated Google Speech-to-Text API for voice input.
-Deployment: Hosted the chatbot on Streamlit Cloud for easy access.
+- Data Collection: structured chatbot responses using an intents.json file, grouping user queries by category (intent).
+- Text Preprocessing: Applied tokenization, stemming, and TF-IDF vectorization to transform text into machine-readable form.
+- Model Training: Used Logistic Regression to classify user inputs into predefined intents.
+- User Interaction: Implemented Streamlit UI for a simple and engaging chat experience.
+- Voice Recognition: Integrated Google Speech-to-Text API for voice input.
+- Deployment: Hosted the chatbot on Streamlit Cloud for easy access.
 
 ## Learning Outcomes
  - NLP & Machine Learning – Implemented TF-IDF vectorization and Logistic Regression.
