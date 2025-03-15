@@ -22,30 +22,30 @@ A **Machine Learning-powered chatbot** that understands **text & voice inputs**,
 
 ## 🚀 Installation & Setup
 ### 1️⃣ Clone the Repository
-## git clone https://github.com/Kaushik00007/Chatbot-NLP
-## cd Chatbot-NLP
+**git clone https://github.com/Kaushik00007/Chatbot-NLP**
+**cd Chatbot-NLP**
 
-### 2️⃣ Install Dependencies
-## pip install -r requirements.txt
+## 2️⃣ Install Dependencies
+**pip install -r requirements.txt**
 
 ## 3️⃣ Run the Chatbot
-## streamlit run chatbot.py
+**streamlit run chatbot.py**
 
 ## 🛠️ How It Works
-1️⃣ User asks a question (via text or voice)
-2️⃣ The chatbot classifies the intent using Logistic Regression
-3️⃣ It retrieves a relevant response based on pre-defined intents in intents.json
-4️⃣ User can select topics to filter responses for better conversation flow
-5️⃣ Conversation is logged and stored in chat_log.csv
+**1️⃣ User asks a question (via text or voice)**
+**2️⃣ The chatbot classifies the intent using Logistic Regression**
+**3️⃣ It retrieves a relevant response based on pre-defined intents in intents.json**
+**4️⃣ User can select topics to filter responses for better conversation flow**
+**5️⃣ Conversation is logged and stored in chat_log.csv**
 
 ### 📂 Project Structure
 
 ## 📁 Chatbot-NLP/
-│-- chatbot.py                # Main chatbot application
-│-- train_model.py            # ML Model training script
-│-- intents.json              # Dataset for chatbot responses
-│-- requirements.txt          # Dependencies
-│-- chat_log.csv              # Chat history storage
+**│-- chatbot.py                # Main chatbot application**
+**│-- train_model.py            # ML Model training script**
+**│-- intents.json              # Dataset for chatbot responses**
+**│-- requirements.txt          # Dependencies**
+**│-- chat_log.csv              # Chat history storage**
 
 ## 📖 Learning Outcomes
  **NLP & Machine Learning** – Implemented TF-IDF vectorization and Logistic Regression.
