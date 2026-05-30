@@ -10,11 +10,20 @@ import random
 import joblib
 import streamlit as st
 import speech_recognition as sr
+import base64
+
+# --- Setup Page Config (MUST BE FIRST) ---
+st.set_page_config(
+    page_title="AI Assistant",
+    page_icon="✨",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 nltk.data.path.append(os.path.abspath("nltk_data"))
-nltk.download('punkt')
+nltk.download('punkt', quiet=True)
 
 file_path = "intents.json"
 try:
@@ -72,7 +81,7 @@ def recognize_speech():
 
     try:
         with sr.Microphone() as source:
-            st.write("🎤 Listening... Speak now!")
+            st.info("🎤 Listening... Speak now!")
             recognizer.adjust_for_ambient_noise(source, duration=1)
             audio = recognizer.listen(source, timeout=10, phrase_time_limit=5)
             return recognizer.recognize_google(audio)
@@ -82,99 +91,225 @@ def recognize_speech():
         return "Sorry, I couldn't understand that."
     except Exception as e:
         return f"Error: {str(e)}"
-    
+
+def inject_custom_css():
+    try:
+        with open("style.css", "r") as f:
+            css = f.read()
+            st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass
+
+def render_chat_message(role, message):
+    if role == "user":
+        avatar = "👤"
+        css_class = "user"
+        actions = ""
+    else:
+        avatar = "✨"
+        css_class = "bot"
+        actions = """
+        <div class="chat-actions">
+            <span title="Copy Response" onclick="navigator.clipboard.writeText(this.parentElement.parentElement.querySelector('p').innerText)">📋</span>
+            <span title="Regenerate Response">🔄</span>
+        </div>
+        """
+        
+    html = f"""
+    <div class="chat-message {css_class}">
+        <div class="chat-avatar">{avatar}</div>
+        <div class="chat-bubble">
+            <p>{message}</p>
+            {actions}
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
 def main():
-    st.title("Chatbot with NLP")
+    inject_custom_css()
 
-    menu = ["Home", "Conversation History", "About"]
-    choice = st.sidebar.selectbox("Menu", menu)
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+    
+    if "selected_topic" not in st.session_state:
+        st.session_state["selected_topic"] = "Daily Life"
+        
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "Home"
 
-    if choice == "Home":
-        st.write("Welcome! Type a message or use voice input.")
-
-        if "chat_history" not in st.session_state:
+    # --- SIDEBAR REDESIGN ---
+    with st.sidebar:
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2rem;">
+            <div style="font-size: 2rem;">✨</div>
+            <h2 style="margin: 0; font-weight: 700; background: linear-gradient(90deg, #7C3AED, #06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Nexus AI</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("➕ New Chat", use_container_width=True):
             st.session_state.chat_history = []
+            st.rerun()
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Custom Sidebar Navigation
+        if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state.current_page == "Home" else "secondary"):
+            st.session_state.current_page = "Home"
+            st.rerun()
+            
+        if st.button("🕰️ History", use_container_width=True, type="primary" if st.session_state.current_page == "History" else "secondary"):
+            st.session_state.current_page = "History"
+            st.rerun()
+            
+        if st.button("ℹ️ About", use_container_width=True, type="primary" if st.session_state.current_page == "About" else "secondary"):
+            st.session_state.current_page = "About"
+            st.rerun()
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 0;'>", unsafe_allow_html=True)
+        
+        voice_btn = st.button("🎙️ Voice Input", help="Push to Talk", use_container_width=True)
+        if voice_btn:
+            with st.spinner("Listening..."):
+                voice_text = recognize_speech()
+                if "timed out" not in voice_text and "couldn't understand" not in voice_text and "not available" not in voice_text:
+                    st.session_state.chat_history.append({"role": "user", "message": voice_text})
+                    st.session_state.current_page = "Home"
+                    st.rerun()
+                else:
+                    st.warning(voice_text)
+            
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="width: 35px; height: 35px; border-radius: 50%; background: #1E293B; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">👤</div>
+            <div>
+                <div style="font-size: 0.9rem; font-weight: 600; color: #F8FAFC;">Guest User</div>
+                <div style="font-size: 0.75rem; color: #94A3B8;">Free Plan</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Topic Selection
-        st.markdown("### Topics")
-        topics = {
-            "Daily Life": "💬",
-            "Health": "❤️",
-            "Knowledge": "📚",
-            "Business": "📊",
-            "Coding": "💻",
-            "Entertainment": "🎭",
-            "Science": "🔬",
-            "Sports": "⚽"
-        }
+    # --- MAIN PAGE LOGIC ---
+    if st.session_state.current_page == "Home":
+        # Empty State / Suggestions
+        if not st.session_state.chat_history:
+            st.markdown("""
+            <div style="text-align: center; padding: 4rem 0 2rem 0;">
+                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">How can I help you today?</h1>
+                <p style="color: #94A3B8; font-size: 1.2rem;">Select a topic below or just start typing.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            topics = [
+                {"topic": "Coding", "icon": "💻", "desc": "Debug, explain and generate code"},
+                {"topic": "Health", "icon": "❤️", "desc": "Wellness, fitness and health guidance"},
+                {"topic": "Science", "icon": "🔬", "desc": "Physics, chemistry and biology"},
+                {"topic": "Daily Life", "icon": "💬", "desc": "General knowledge and routines"},
+                {"topic": "Business", "icon": "📊", "desc": "Finance, strategy and marketing"},
+                {"topic": "Entertainment", "icon": "🎭", "desc": "Movies, games and pop culture"},
+                {"topic": "Sports", "icon": "⚽", "desc": "Athletics, teams and scores"},
+                {"topic": "Productivity", "icon": "⚡", "desc": "Time management and workflows"}
+            ]
+            
+            cols = st.columns(4)
+            for i, item in enumerate(topics):
+                with cols[i % 4]:
+                    # We use Streamlit native buttons but they will be styled by our CSS
+                    if st.button(f"{item['icon']} {item['topic']}\\n\\n{item['desc']}", key=f"btn_{item['topic']}", use_container_width=True):
+                        st.session_state["selected_topic"] = item['topic']
+                        st.rerun()
+                        
+            st.markdown(f"<div style='text-align: center; margin-top: 2rem; color: var(--secondary); font-weight: 600;'>Currently specialized in: {st.session_state['selected_topic']}</div>", unsafe_allow_html=True)
 
-        if "selected_topic" not in st.session_state:
-            st.session_state["selected_topic"] = "Daily Life"
+        else:
+            # Chat History Container
+            st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+            for entry in st.session_state.chat_history:
+                render_chat_message(entry["role"], entry["message"])
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        topic_list = list(topics.items())
-        cols = st.columns(4)
-        for i, (topic, icon) in enumerate(topic_list):
-            with cols[i % 4]:  
-                if st.button(f"{icon} {topic}"):
-                    st.session_state["selected_topic"] = topic
-                    st.rerun()  
-
-        st.write(f" Currently chatting about: **{st.session_state['selected_topic']}**")
-
-        user_input = st.text_input("You:")
-        if st.button("🎙️ Push to Talk"):
-            voice_text = recognize_speech()
-            if "timed out" in voice_text or "couldn't understand" in voice_text:
-                st.warning(voice_text)
-            else:
-                st.text(f"You (Voice): {voice_text}")
-                user_input = voice_text 
+        # Bottom Input Area
+        # Use columns for text input and voice button to mimic a floating dock
+        st.markdown("<br><br><br>", unsafe_allow_html=True) # Spacer for floating input
+        
+        user_input = st.chat_input("Ask anything...")
 
         if user_input:
-            with st.spinner("Chatbot is typing..."):
-                time.sleep(1)  
-            response = chatbot(user_input, st.session_state["selected_topic"])
-
+            # Display user message instantly
             st.session_state.chat_history.append({"role": "user", "message": user_input})
+            st.rerun() # Rerun to show user message and trigger bot response
+
+        # Bot Response Logic (triggered if last message was from user)
+        if st.session_state.chat_history and st.session_state.chat_history[-1]["role"] == "user":
+            user_msg = st.session_state.chat_history[-1]["message"]
+            
+            # Show typing indicator
+            st.markdown("""
+            <div class="chat-message bot">
+                <div class="chat-avatar">✨</div>
+                <div class="chat-bubble">
+                    <div class="typing">
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            time.sleep(1) # Fake delay for typing effect
+            
+            response = chatbot(user_msg, st.session_state["selected_topic"])
             st.session_state.chat_history.append({"role": "assistant", "message": response})
-
-            for entry in st.session_state.chat_history:
-                st.chat_message(entry["role"]).markdown(entry["message"])
-
+            
+            # Log conversation
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             with open("chat_log.csv", "a", newline="", encoding="utf-8") as csvfile:
                 csv_writer = csv.writer(csvfile)
-                csv_writer.writerow([user_input, response, timestamp])
+                csv_writer.writerow([user_msg, response, timestamp])
+                
+            st.rerun() # Rerun to replace typing indicator with actual message
 
-            if response.lower() in ["goodbye", "bye"]:
-                st.write("Thank you for chatting! Have a great day! 🎉")
-                st.stop()
-
-    elif choice == "Conversation History":
-        st.header("Conversation History")
+    elif st.session_state.current_page == "History":
+        st.markdown("""
+        <h1 style="font-weight: 700; margin-bottom: 2rem;">Conversation History</h1>
+        """, unsafe_allow_html=True)
+        
         if os.path.exists("chat_log.csv"):
             with open("chat_log.csv", "r", encoding="utf-8") as csvfile:
                 csv_reader = csv.reader(csvfile)
-                next(csv_reader, None)  
-                for row in csv_reader:
+                next(csv_reader, None) # skip header
+                
+                for row in reversed(list(csv_reader)): # Show newest first
                     if len(row) >= 3:
-                        st.markdown(f"**👤 You:** {row[0]}")
-                        st.markdown(f"**🤖 Chatbot:** {row[1]}")
-                        st.caption(f"🕒 {row[2]}")
-                        st.markdown("---")
+                        st.markdown(f"""
+                        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                            <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.5rem;">{row[2]}</div>
+                            <div style="margin-bottom: 1rem;"><strong>👤 You:</strong> {row[0]}</div>
+                            <div><strong>✨ Nexus AI:</strong> {row[1]}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
         else:
-            st.write("No conversation history found.")
+            st.info("No conversation history found.")
 
-    elif choice == "About":
-        st.write("""
-        ### Chatbot with NLP, Topics, and Voice
-        - Uses NLP and Machine Learning
-        - Supports Text & Voice Input
-        - Uses Google Speech-to-Text for Voice Recognition
-        - Includes **Topic-Based Chat Filtering** for better conversations
-        
-        **Developed with Python & Streamlit**
-        """)
+    elif st.session_state.current_page == "About":
+        st.markdown("""
+        <h1 style="font-weight: 700; margin-bottom: 2rem;">About Nexus AI</h1>
+        <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h3 style="color: var(--primary);">Next-Gen Conversational Interface</h3>
+            <p style="color: var(--text-secondary); line-height: 1.6;">
+                Nexus AI represents a leap forward in conversational UX, blending standard Streamlit simplicity with a premium, futuristic SaaS aesthetic.
+            </p>
+            <ul style="color: var(--text-secondary); line-height: 1.8;">
+                <li>🧠 Powered by advanced NLP & Machine Learning</li>
+                <li>🎙️ Seamless Voice Integration via Google Speech-to-Text</li>
+                <li>🎯 Dynamic Topic Filtering for contextual conversations</li>
+                <li>✨ Glassmorphism UI with responsive design</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
