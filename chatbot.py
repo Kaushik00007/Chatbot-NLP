@@ -143,7 +143,7 @@ def main():
         st.markdown("""
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2rem;">
             <div style="font-size: 2rem;">✨</div>
-            <h2 style="margin: 0; font-weight: 700; background: linear-gradient(90deg, #7C3AED, #06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Nexus AI</h2>
+            <h2 style="margin: 0; font-weight: 700; background: linear-gradient(90deg, #7C3AED, #06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Chatbot-NLP</h2>
         </div>
         """, unsafe_allow_html=True)
         
@@ -288,7 +288,7 @@ def main():
                         <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
                             <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.5rem;">{row[2]}</div>
                             <div style="margin-bottom: 1rem;"><strong>👤 You:</strong> {row[0]}</div>
-                            <div><strong>✨ Nexus AI:</strong> {row[1]}</div>
+                            <div><strong>Chatbot-NLP:</strong> {row[1]}</div>
                         </div>
                         """, unsafe_allow_html=True)
         else:
@@ -296,11 +296,11 @@ def main():
 
     elif st.session_state.current_page == "About":
         st.markdown("""
-        <h1 style="font-weight: 700; margin-bottom: 2rem;">About Nexus AI</h1>
+        <h1 style="font-weight: 700; margin-bottom: 2rem;">About Chatbot-NLP</h1>
         <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color);">
             <h3 style="color: var(--primary);">Next-Gen Conversational Interface</h3>
             <p style="color: var(--text-secondary); line-height: 1.6;">
-                Nexus AI represents a leap forward in conversational UX, blending standard Streamlit simplicity with a premium, futuristic SaaS aesthetic.
+                Chatbot-NLP represents a leap forward in conversational UX, blending standard Streamlit simplicity with a premium, futuristic SaaS aesthetic.
             </p>
             <ul style="color: var(--text-secondary); line-height: 1.8;">
                 <li>🧠 Powered by advanced NLP & Machine Learning</li>
